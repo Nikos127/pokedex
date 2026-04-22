@@ -1,0 +1,13 @@
+*{
+    margin: 0;
+}
+
+header img{
+    width: 400px;
+}
+
+header{
+    display: flex;
+    justify-content: center;
+    background-color: yellow;
+}
