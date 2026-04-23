@@ -1,36 +1,60 @@
-*{
+* {
     margin: 0;
+    overflow-y: hidden;
 }
 
-header img{
+header img {
     width: 400px;
 }
 
-header{
+header {
     display: flex;
     justify-content: center;
     background-color: yellow;
 }
 
-main{
-    max-width: 1920px;
+main {
+    min-width: 1920px;
 }
 
-.card{
-    padding: 8px;
-}
-
-.name{
+.name {
     display: flex;
+    font-size: 18px;
     justify-content: center;
-    text-align: center;
+    width: 200px;
 }
 
-.card img{
+.card img {
     border-radius: 16px;
+    width: 200px;
+    height: 200px;
 }
 
-.cards{
+.cards {
     width: 100vw;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 16px;
+
+}
+
+.speciesStatus {
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    width: 200px;
+}
+
+.cards button {
+    min-width: 150px;
+    border: none;
+    background: none;
+    display: flex;
+    justify-content: center;
+}
+
+.cards button:hover {
+    cursor: pointer;
+    filter: brightness(1.2);
 }

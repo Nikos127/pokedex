@@ -9,15 +9,17 @@ async function getPokeJson() {
 
     for (let i = 0; i < character.length; i++) {
         document.getElementById('cards').innerHTML += cardsREF(character, i);
+
+
     }
 }
 
-function cardsREF(character, i){
-     return `
+function cardsREF(character, i) {
+    return `
      <div class="card">
-        <div id="name">${character[i].name}</div>
-        <img src="${character[i].image}" alt=""></img>
-        <div id="speciesStatus">${character[i].species} Status: ${character[i].status}</div>
+        <div class="name">${character[i].name}</div>
+        <button><img src="${character[i].image}" alt=""></img></button>
+        <div class="speciesStatus">${character[i].species} <span>Status: ${character[i].status}</span></div>
      </div>
      `
 }
