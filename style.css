@@ -11,3 +11,26 @@ header{
     justify-content: center;
     background-color: yellow;
 }
+
+main{
+    max-width: 1920px;
+}
+
+.card{
+    padding: 8px;
+}
+
+.name{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.card img{
+    border-radius: 16px;
+}
+
+.cards{
+    width: 100vw;
+    display: flex;
+}
