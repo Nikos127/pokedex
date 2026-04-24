@@ -1,16 +1,33 @@
 * {
     margin: 0;
-    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+h1{
+    font-size: 64px;
 }
 
 header img {
-    width: 400px;
+    width: 64px;
+    height: 64px;
+    margin: 24px;
+    padding-top: 24px;
 }
 
 header {
     display: flex;
-    justify-content: center;
-    background-color: yellow;
+    justify-content: space-between;
+    align-items: center;
+    background-color: black;
+    font-family: 'Pokemon Solid', sans-serif;
+    color: white;
+    padding-right: 24px;
+}
+
+.logo{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
 }
 
 main {
@@ -22,6 +39,7 @@ main {
     font-size: 18px;
     justify-content: center;
     width: 200px;
+    color: white;
 }
 
 .card img {
@@ -35,8 +53,8 @@ main {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    padding: 16px;
-
+    gap: 20px;
+background-color: rgb(27, 26, 26);
 }
 
 .speciesStatus {
@@ -44,6 +62,7 @@ main {
     justify-content: space-between;
     font-size: 18px;
     width: 200px;
+    color: white;
 }
 
 .cards button {
