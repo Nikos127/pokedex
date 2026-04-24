@@ -1,35 +1,41 @@
-let rickAMortyData = 'https://rickandmortyapi.com/api/character';
+const API_URL = 'https://rickandmortyapi.com/api/character';
 let allCharacters = [];
-let currentCharacters = [];
 
 function init() {
-    currentCharacters = allCharacters;
-    getPokeJson();
+    loadCharacters();
+    setupSearch();
 }
 
-async function getPokeJson() {
-    let response = await fetch(rickAMortyData);
-    let allData = await response.json();
-    let character = allData.results;
-    currentCharacters = allData.results;
-    console.log(character);
+async function loadCharacters() {
+    const response = await fetch(API_URL);
+    const data = await response.json();
+    allCharacters = data.results;
+    displayCharacters(allCharacters);
+}
 
-    for (let i = 0; i < character.length; i++) {
-        document.getElementById('cards').innerHTML += cardsREF(character, i);
+function setupSearch() {
+    document.getElementById('search').addEventListener('input', (event) => {
+        const searchTerm = event.target.value.toLowerCase();
+        const filtered = searchTerm
+            ? allCharacters.filter(character => character.name.toLowerCase().includes(searchTerm))
+            : allCharacters;
+        displayCharacters(filtered);
+    });
+}
+
+function displayCharacters(characters) {
+    document.getElementById('cards').innerHTML = '';
+    for (let i = 0; i < characters.length; i++) {
+        document.getElementById('cards').innerHTML += createCard(characters[i]);
     }
 }
 
-function cardsREF(character, i) {
+function createCard(character) {
     return `
-     <div class="card">
-        <div class="name">${character[i].name}</div>
-        <button><img src="${character[i].image}" alt=""></img></button>
-        <div class="speciesStatus">${character[i].species} <span>Status: ${character[i].status}</span></div>
-     </div>
-     `
-}
-
-function filterAndShowCharacters() {
-    currentCharacters = allCharacters.filter(name => includes(filterWord))
-    getPokeJson();
+        <div class="card">
+            <div class="name">${character.name}</div>
+            <button><img src="${character.image}" alt="${character.name}"></button>
+            <div class="speciesStatus">${character.species} <span>Status: ${character.status}</span></div>
+        </div>
+    `;
 }
