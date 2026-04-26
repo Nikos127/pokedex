@@ -3,7 +3,7 @@
     overflow-x: hidden;
 }
 
-h1{
+h1 {
     font-size: 64px;
 }
 
@@ -24,10 +24,14 @@ header {
     padding-right: 24px;
 }
 
-.logo{
+.logo {
     display: flex;
     align-items: center;
     flex-direction: row;
+}
+
+input {
+    height: 24px;
 }
 
 main {
@@ -54,7 +58,7 @@ main {
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
-background-color: rgb(27, 26, 26);
+    background-color: rgb(27, 26, 26);
 }
 
 .speciesStatus {
@@ -76,4 +80,29 @@ background-color: rgb(27, 26, 26);
 .cards button:hover {
     cursor: pointer;
     filter: brightness(1.2);
+}
+
+footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    height: 80px;
+    color: white;
+}
+
+.loadMore {
+    display: flex;
+    justify-content: center;
+    background-color: #1B1A1A;
+}
+
+.loadMore button {
+    margin: 16px;
+    width: 140px;
+    height: 60px;
+    border-radius: 16px;
+    font-size: 18px;
+    background-color: #E85350;
+    border: 8px solid #704E51;
 }
