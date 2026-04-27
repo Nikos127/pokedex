@@ -35,7 +35,7 @@ input {
 }
 
 main {
-    min-width: 1920px;
+    width: 100vw;
 }
 
 .name {
@@ -94,15 +94,31 @@ footer {
 .loadMore {
     display: flex;
     justify-content: center;
+    padding: 20px 0;
+    width: 100%;
     background-color: #1B1A1A;
 }
 
 .loadMore button {
-    margin: 16px;
+    margin: 0;
     width: 140px;
     height: 60px;
     border-radius: 16px;
     font-size: 18px;
     background-color: #E85350;
     border: 8px solid #704E51;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.loadMore button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.loadMore button:disabled {
+    opacity: 0.6;
+    transform: none;
+    cursor: not-allowed;
 }

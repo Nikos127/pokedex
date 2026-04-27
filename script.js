@@ -1,25 +1,40 @@
 const API_URL = 'https://rickandmortyapi.com/api/character';
 let allCharacters = [];
+let currentPage = 1;
+let hasNextPage = true;
 
 function init() {
     loadCharacters();
-    setupSearch();
+    setupEventListeners();
 }
 
-async function loadCharacters() {
-    const response = await fetch(API_URL);
+async function loadCharacters(page = 1) {
+    const response = await fetch(`${API_URL}?page=${page}`);
     const data = await response.json();
-    allCharacters = data.results;
+
+    if (page === 1) {
+        allCharacters = data.results;
+    } else {
+        allCharacters = allCharacters.concat(data.results);
+    }
+
     displayCharacters(allCharacters);
 }
 
-function setupSearch() {
+function setupEventListeners() {
     document.getElementById('search').addEventListener('input', (event) => {
         const searchTerm = event.target.value.toLowerCase();
         const filtered = searchTerm
             ? allCharacters.filter(character => character.name.toLowerCase().includes(searchTerm))
             : allCharacters;
         displayCharacters(filtered);
+    });
+
+    document.querySelector('.loadMore button').addEventListener('click', () => {
+        if (hasNextPage) {
+            currentPage++;
+            loadCharacters(currentPage);
+        }
     });
 }
 
