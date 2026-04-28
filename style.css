@@ -61,7 +61,7 @@ main {
     background-color: rgb(27, 26, 26);
 }
 
-.speciesStatus {
+.type {
     display: flex;
     justify-content: space-between;
     font-size: 18px;

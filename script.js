@@ -1,4 +1,4 @@
-const API_URL = 'https://rickandmortyapi.com/api/character';
+const API_URL = 'https://pokeapi.co/api/v2/pokemon?limit=20&offset=0';
 let allCharacters = [];
 let currentPage = 1;
 let hasNextPage = true;
@@ -9,8 +9,16 @@ function init() {
 }
 
 async function loadCharacters(page = 1) {
-    const response = await fetch(`${API_URL}?page=${page}`);
+    const offset = (page - 1) * 20;
+    const response = await fetch(API_URL.replace('offset=0', `offset=${offset}`));
     const data = await response.json();
+
+    // Lade die detaillierten Daten für jedes Pokémon
+    for (let i = 0; i < data.results.length; i++) {
+        const detailResponse = await fetch(data.results[i].url);
+        const detailData = await detailResponse.json();
+        data.results[i] = detailData;
+    }
 
     if (page === 1) {
         allCharacters = data.results;
@@ -18,6 +26,7 @@ async function loadCharacters(page = 1) {
         allCharacters = allCharacters.concat(data.results);
     }
 
+    hasNextPage = data.next !== null;
     displayCharacters(allCharacters);
 }
 
@@ -49,8 +58,8 @@ function createCard(character) {
     return `
         <div class="card">
             <div class="name">${character.name}</div>
-            <button><img src="${character.image}" alt="${character.name}"></button>
-            <div class="speciesStatus">${character.species} <span>Status: ${character.status}</span></div>
+            <button><img src="${character.sprites.other.home.front_default}" alt="${character.name}"></button>
+            <div class="type">${character.types[0]?.type.name || 'unknown'} <span>${character.types[1]?.type.name || 'none'}</span></div>
         </div>
     `;
 }
