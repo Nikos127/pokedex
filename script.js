@@ -51,6 +51,7 @@ function displayCharacters(characters) {
     document.getElementById('cards').innerHTML = '';
     for (let i = 0; i < characters.length; i++) {
         document.getElementById('cards').innerHTML += createCard(characters[i]);
+        console.log(characters[i].types[0].type.name)
     }
 }
 
@@ -58,7 +59,7 @@ function createCard(character) {
     return `
         <div class="card">
             <div class="name">${character.name}</div>
-            <button><img src="${character.sprites.other.home.front_default}" alt="${character.name}"></button>
+            <button class="${character.types[0].type.name}"><img src="${character.sprites.other.home.front_default}" alt="${character.name}"></button>
             <div class="type">${character.types[0]?.type.name || 'unknown'} <span>${character.types[1]?.type.name || 'none'}</span></div>
         </div>
     `;
