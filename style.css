@@ -38,16 +38,7 @@ main {
     width: 100vw;
 }
 
-.name {
-    display: flex;
-    font-size: 18px;
-    justify-content: center;
-    width: 200px;
-    color: white;
-}
-
 .card img {
-    border-radius: 16px;
     width: 200px;
     height: 200px;
 }
@@ -63,10 +54,19 @@ main {
 
 .type {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
     font-size: 18px;
     width: 200px;
     color: white;
+    margin-top: 8px;
+}
+
+.type-icon {
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 4px !important;
 }
 
 .cards button {
@@ -125,85 +125,94 @@ footer {
 
 .grass {
     background-color: #78C850 !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .fire {
     background-color: #F08030 !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .water {
     background-color: #6890F0 !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .bug {
     background-color: #A8B820 !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .normal {
     background-color: #A8A878 !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .poison {
     background-color: #A040A0 !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .electric {
     background-color: #F8D030 !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .ground {
     background-color: #E0C068 !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .fairy {
     background-color: #EE99AC !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .fighting {
     background-color: #C03028 !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .psychic {
     background-color: #F85888 !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .rock {
     background-color: #B8A038 !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .ghost {
     background-color: #705898 !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .ice {
     background-color: #98D8D8 !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .dragon {
     background-color: #7038F8 !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .dark {
     background-color: #705848 !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
 }
 
 .steel {
     background-color: #B8B8D0 !important;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
+}
+
+.border {
+    border-radius: 16px 16px 0 0 !important;
+    display: flex;
+    font-size: 18px;
+    font-weight: bold;
+    justify-content: center;
+    color: white;
 }
