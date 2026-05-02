@@ -9,15 +9,16 @@ function init() {
 }
 
 async function loadCharacters(page = 1) {
-    const offset = (page - 1) * 20;
+    const offset = (page - 1) * 50;
     const response = await fetch(API_URL.replace('offset=0', `offset=${offset}`));
     const data = await response.json();
 
-    // Lade die detaillierten Daten für jedes Pokémon
     for (let i = 0; i < data.results.length; i++) {
         const detailResponse = await fetch(data.results[i].url);
         const detailData = await detailResponse.json();
         data.results[i] = detailData;
+        console.log(detailData);
+
     }
 
     if (page === 1) {
