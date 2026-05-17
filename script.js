@@ -1,7 +1,9 @@
-const API_URL = 'https://pokeapi.co/api/v2/pokemon?limit=50&offset=0';
+const pokedexAPI = 'https://pokeapi.co/api/v2/pokemon?limit=50&offset=0';
+const loadingTime = 1500;
 let allCharacters = [];
 let currentPage = 1;
 let hasNextPage = true;
+let isLoading = false;
 
 function init() {
     loadCharacters();
@@ -9,39 +11,80 @@ function init() {
 }
 
 async function loadCharacters(page = 1) {
+    if (isLoading) {
+        return;
+    }
+
+    const loadingStartedAt = Date.now();
+    setLoadingState(true);
     const offset = (page - 1) * 50;
-    const response = await fetch(API_URL.replace('offset=0', `offset=${offset}`));
-    const data = await response.json();
+    try {
+        const response = await fetch(pokedexAPI.replace('offset=0', `offset=${offset}`));
+        const data = await response.json();
 
-    for (let i = 0; i < data.results.length; i++) {
-        const detailResponse = await fetch(data.results[i].url);
-        const detailData = await detailResponse.json();
-        data.results[i] = detailData;
-        console.log(detailData);
+        for (let i = 0; i < data.results.length; i++) {
+            const detailResponse = await fetch(data.results[i].url);
+            const detailData = await detailResponse.json();
+            data.results[i] = detailData;
+        }
 
+        if (page === 1) {
+            allCharacters = data.results;
+        } else {
+            allCharacters = allCharacters.concat(data.results);
+        }
+
+        hasNextPage = data.next !== null;
+        displayCharacters(allCharacters);
+    } catch (error) {
+        console.error('Fehler beim Laden der Pokemon:', error);
+    } finally {
+        const elapsedTime = Date.now() - loadingStartedAt;
+        if (elapsedTime < loadingTime) {
+            await delay(loadingTime - elapsedTime);
+        }
+        setLoadingState(false);
+    }
+}
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function setLoadingState(loading) {
+    isLoading = loading;
+    const loader = document.getElementById('loadSpinner');
+    const loadMoreButton = document.querySelector('.loadMore button');
+
+    if (loader) {
+        loader.hidden = !loading;
     }
 
-    if (page === 1) {
-        allCharacters = data.results;
-    } else {
-        allCharacters = allCharacters.concat(data.results);
+    if (loadMoreButton) {
+        loadMoreButton.disabled = loading || !hasNextPage;
     }
-
-    hasNextPage = data.next !== null;
-    displayCharacters(allCharacters);
 }
 
 function setupEventListeners() {
     document.getElementById('search').addEventListener('input', (event) => {
-        const searchTerm = event.target.value.toLowerCase();
-        const filtered = searchTerm
-            ? allCharacters.filter(character => character.name.toLowerCase().includes(searchTerm))
-            : allCharacters;
+        const searchTerm = event.target.value.toLowerCase().trim();
+        if (searchTerm.length < 3) {
+            displayCharacters(allCharacters);
+            return;
+        }
+
+        let filtered = [];
+        for (let i = 0; i < allCharacters.length; i++) {
+            if (allCharacters[i].name.toLowerCase().includes(searchTerm)) {
+                filtered.push(allCharacters[i]);
+            }
+        }
+
         displayCharacters(filtered);
     });
 
     document.querySelector('.loadMore button').addEventListener('click', () => {
-        if (hasNextPage) {
+        if (hasNextPage && !isLoading) {
             currentPage++;
             loadCharacters(currentPage);
         }
@@ -61,12 +104,16 @@ function getTypeIconUrl(typeName, isSmall = false) {
 }
 
 function displayCharacters(characters) {
+    const cards = document.getElementById('cards');
+    if (!cards) {
+        return;
+    }
+
     let html = '';
     for (let i = 0; i < characters.length; i++) {
         html += createCard(characters[i]);
-        console.log(characters[i].types[0].type.name)
     }
-    document.getElementById('cards').innerHTML = html;
+    cards.innerHTML = html;
 }
 
 function createCard(character) {

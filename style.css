@@ -1,27 +1,43 @@
 * {
     margin: 0;
     overflow-x: hidden;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+html,
+body {
+    min-height: 100vh;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(27, 26, 26) !important;
 }
 
 h1 {
+    font-family: 'Pokemon Solid', sans-serif;
     font-size: 64px;
+    line-height: 70px !important;
+    overflow: hidden;
 }
 
 header img {
     width: 64px;
     height: 64px;
-    margin: 24px;
-    padding-top: 24px;
+    margin: 24px 24px 24px 0;
 }
 
 header {
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: black;
     font-family: 'Pokemon Solid', sans-serif;
     color: white;
-    padding-right: 24px;
+    padding-left: max(24px, calc((100vw - 1920px) / 2));
+    padding-right: max(24px, calc((100vw - 1920px) / 2 + 24px));
 }
 
 .logo {
@@ -30,17 +46,53 @@ header {
     flex-direction: row;
 }
 
+label {
+    font-family: 'Pokemon Solid', sans-serif;
+    font-size: 18px;
+    color: white;
+    margin-right: 8px;
+    overflow: hidden;
+}
+
 input {
     height: 24px;
 }
 
 main {
     width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    background-color: rgb(27, 26, 26);
+    max-width: 1920px;
+    margin: 0 auto;
+}
+
+
+.loadSpinner {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(27, 26, 26, 0.82);
+    z-index: 1000;
+}
+
+.loadSpinner img {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
 }
 
 .card img {
     width: 200px;
     height: 200px;
+}
+
+.card {
+    background-color: rgb(27, 26, 26) !important;
 }
 
 .cards {
@@ -94,6 +146,7 @@ footer {
 .loadMore {
     display: flex;
     justify-content: center;
+    align-items: center;
     padding: 20px 0;
     width: 100%;
     background-color: #1B1A1A;
