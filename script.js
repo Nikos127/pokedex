@@ -66,7 +66,12 @@ function setLoadingState(loading) {
 }
 
 function setupEventListeners() {
-    document.getElementById('search').addEventListener('input', (event) => {
+    const searchInput = document.getElementById('search');
+    const loadMoreButton = document.querySelector('.loadMore button');
+    const dialog = document.getElementById('pokeDetailsDialog');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', (event) => {
         const searchTerm = event.target.value.toLowerCase().trim();
         if (searchTerm.length < 3) {
             displayCharacters(allCharacters);
@@ -82,16 +87,27 @@ function setupEventListeners() {
 
         displayCharacters(filtered);
     });
+    }
 
-    document.querySelector('.loadMore button').addEventListener('click', () => {
-        if (hasNextPage && !isLoading) {
-            currentPage++;
-            loadCharacters(currentPage);
-        }
-    });
+    if (loadMoreButton) {
+        loadMoreButton.addEventListener('click', () => {
+            if (hasNextPage && !isLoading) {
+                currentPage++;
+                loadCharacters(currentPage);
+            }
+        });
+    }
+
+    if (dialog) {
+        dialog.addEventListener('click', (event) => {
+            if (event.target === dialog) {
+                dialog.close();
+            }
+        });
+    }
 }
 
-function getTypeIconUrl(typeName, isSmall = false) {
+function getTypeIconUrl(typeName) {
     const typeIds = {
         normal: 1, fighting: 2, flying: 3, poison: 4, ground: 5, rock: 6,
         bug: 7, ghost: 8, steel: 9, fire: 10, water: 11, grass: 12,
@@ -99,12 +115,66 @@ function getTypeIconUrl(typeName, isSmall = false) {
     };
 
     const typeId = typeIds[typeName] || 1;
-    const sizePath = isSmall ? 'small/' : '';
-    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/${sizePath}${typeId}.png`;
+    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/small/${typeId}.png`;
 }
 
-function openDialog() {
+function createDialogTypeHtml(character) {
+    let html = '';
+    for (let i = 0; i < character.types.length; i++) {
+        const typeName = character.types[i].type.name;
+        html += `<span><img src="${getTypeIconUrl(typeName)}" alt="${typeName}" class="type-icon"> ${typeName}</span>`;
+    }
+    return html;
+}
+
+function createDialogStatsHtml(character) {
+    let html = '';
+    for (let i = 0; i < character.stats.length; i++) {
+        const statName = character.stats[i].stat.name;
+        const statValue = character.stats[i].base_stat;
+        html += `
+            <div class="dialog-stat-row">
+                <span>${statName}</span>
+                <span>${statValue}</span>
+            </div>
+        `;
+    }
+    return html;
+}
+
+function createDialogTemplate(character) {
+    const firstType = character.types[0]?.type.name || 'normal';
+    return `
+        <div class="dialog-card ${firstType}">
+            <h2>${character.name}</h2>
+            <img src="${character.sprites.other.home.front_default}" alt="${character.name}">
+            <div class="dialog-types">${createDialogTypeHtml(character)}</div>
+            <div class="dialog-stats">${createDialogStatsHtml(character)}</div>
+        </div>
+    `;
+}
+
+function findCharacterById(characterId) {
+    for (let i = 0; i < allCharacters.length; i++) {
+        if (allCharacters[i].id === characterId) {
+            return allCharacters[i];
+        }
+    }
+    return null;
+}
+
+function openDialogById(characterId) {
+    const selectedCharacter = findCharacterById(characterId);
+    if (!selectedCharacter) {
+        return;
+    }
+
     const dialog = document.getElementById('pokeDetailsDialog');
+    const dialogContent = document.getElementById('dialogContent');
+    if (dialogContent) {
+        dialogContent.innerHTML = createDialogTemplate(selectedCharacter);
+    }
+
     if (dialog) {
         dialog.showModal();
     }
@@ -134,17 +204,15 @@ function createCard(character) {
     const firstType = character.types[0]?.type.name || 'unknown';
     const secondType = character.types[1]?.type.name || '';
 
-    let typeHtml = `<img src="${getTypeIconUrl(firstType, true)}" alt="${firstType}" class="type-icon"> ${firstType}`;
+    let typeHtml = `<img src="${getTypeIconUrl(firstType)}" alt="${firstType}" class="type-icon"> ${firstType}`;
     if (secondType) {
-        typeHtml += ` <img src="${getTypeIconUrl(secondType, true)}" alt="${secondType}" class="type-icon"> ${secondType}`;
-        console.log(typeHtml);
-        
+        typeHtml += ` <img src="${getTypeIconUrl(secondType)}" alt="${secondType}" class="type-icon"> ${secondType}`;
     }
 
     return `
         <div class="card">
-            <div class="${character.types[0]?.type.name} border">${character.name}</div>
-            <button onclick="openDialog()" class="${firstType}"><img src="${character.sprites.other.home.front_default}" alt="${character.name}"></button>
+            <div class="${firstType} border">${character.name}</div>
+            <button onclick="openDialogById(${character.id})" class="${firstType}"><img src="${character.sprites.other.home.front_default}" alt="${character.name}"></button>
             <div class="type">${typeHtml}</div>
         </div>
     `;
