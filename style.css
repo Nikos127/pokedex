@@ -269,3 +269,27 @@ footer {
     justify-content: center;
     color: white;
 }
+
+dialog[open]{
+    display: flex;
+    flex-direction: column;
+    width: 480px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.55);
+}
+
+dialog button{
+    align-self: flex-end;
+    border: none;
+    background-color: white;
+}
+
+dialog button:hover{
+    background-color: rgb(224, 222, 222);
+}

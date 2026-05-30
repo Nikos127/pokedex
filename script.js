@@ -25,7 +25,7 @@ async function loadCharacters(page = 1) {
         for (let i = 0; i < data.results.length; i++) {
             const detailResponse = await fetch(data.results[i].url);
             const detailData = await detailResponse.json();
-            data.results[i] = detailData;
+            data.results[i] = detailData;            
         }
 
         if (page === 1) {
@@ -103,6 +103,20 @@ function getTypeIconUrl(typeName, isSmall = false) {
     return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-ix/scarlet-violet/${sizePath}${typeId}.png`;
 }
 
+function openDialog() {
+    const dialog = document.getElementById('pokeDetailsDialog');
+    if (dialog) {
+        dialog.showModal();
+    }
+}
+
+function closeDialog() {
+    const dialog = document.getElementById('pokeDetailsDialog');
+    if (dialog) {
+        dialog.close();
+    }
+}
+
 function displayCharacters(characters) {
     const cards = document.getElementById('cards');
     if (!cards) {
@@ -117,18 +131,20 @@ function displayCharacters(characters) {
 }
 
 function createCard(character) {
-    const primaryType = character.types[0]?.type.name || 'unknown';
-    const secondaryType = character.types[1]?.type.name || '';
+    const firstType = character.types[0]?.type.name || 'unknown';
+    const secondType = character.types[1]?.type.name || '';
 
-    let typeHtml = `<img src="${getTypeIconUrl(primaryType, true)}" alt="${primaryType}" class="type-icon"> ${primaryType}`;
-    if (secondaryType) {
-        typeHtml += ` <img src="${getTypeIconUrl(secondaryType, true)}" alt="${secondaryType}" class="type-icon"> ${secondaryType}`;
+    let typeHtml = `<img src="${getTypeIconUrl(firstType, true)}" alt="${firstType}" class="type-icon"> ${firstType}`;
+    if (secondType) {
+        typeHtml += ` <img src="${getTypeIconUrl(secondType, true)}" alt="${secondType}" class="type-icon"> ${secondType}`;
+        console.log(typeHtml);
+        
     }
 
     return `
         <div class="card">
             <div class="${character.types[0]?.type.name} border">${character.name}</div>
-            <button class="${primaryType}"><img src="${character.sprites.other.home.front_default}" alt="${character.name}"></button>
+            <button onclick="openDialog()" class="${firstType}"><img src="${character.sprites.other.home.front_default}" alt="${character.name}"></button>
             <div class="type">${typeHtml}</div>
         </div>
     `;
