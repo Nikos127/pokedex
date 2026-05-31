@@ -1,6 +1,15 @@
-@media(max-width: 600px){
-    header{
-          flex-direction: column;
+@media(max-width: 600px) {
+    header {
+        flex-direction: column;
     }
-  
+
+    .logo img {
+        margin-bottom: 8px;
+    }
+
+    .searchBox {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 8px;
+    }
 }

@@ -25,7 +25,7 @@ async function loadCharacters(page = 1) {
         for (let i = 0; i < data.results.length; i++) {
             const detailResponse = await fetch(data.results[i].url);
             const detailData = await detailResponse.json();
-            data.results[i] = detailData;            
+            data.results[i] = detailData;
         }
 
         if (page === 1) {
@@ -72,21 +72,21 @@ function setupEventListeners() {
 
     if (searchInput) {
         searchInput.addEventListener('input', (event) => {
-        const searchTerm = event.target.value.toLowerCase().trim();
-        if (searchTerm.length < 3) {
-            displayCharacters(allCharacters);
-            return;
-        }
-
-        let filtered = [];
-        for (let i = 0; i < allCharacters.length; i++) {
-            if (allCharacters[i].name.toLowerCase().includes(searchTerm)) {
-                filtered.push(allCharacters[i]);
+            const searchTerm = event.target.value.toLowerCase().trim();
+            if (searchTerm.length < 3) {
+                displayCharacters(allCharacters);
+                return;
             }
-        }
 
-        displayCharacters(filtered);
-    });
+            let filtered = [];
+            for (let i = 0; i < allCharacters.length; i++) {
+                if (allCharacters[i].name.toLowerCase().includes(searchTerm)) {
+                    filtered.push(allCharacters[i]);
+                }
+            }
+
+            displayCharacters(filtered);
+        });
     }
 
     if (loadMoreButton) {
@@ -190,6 +190,11 @@ function closeDialog() {
 function displayCharacters(characters) {
     const cards = document.getElementById('cards');
     if (!cards) {
+        return;
+    }
+
+    if (characters.length === 0) {
+        cards.innerHTML = '<p class="no-results">Kein Pokemon gefunden.</p>';
         return;
     }
 
