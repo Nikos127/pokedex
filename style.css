@@ -105,6 +105,48 @@ main {
     max-width: 1920px;
 }
 
+.no-results {
+    width: min(640px, calc(100% - 32px));
+    margin: 24px auto;
+    padding: 24px;
+    border-radius: 20px;
+    border: 2px solid #3a3838;
+    background: linear-gradient(145deg, #2a2727 0%, #1b1a1a 70%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    color: #ffffff;
+    text-align: center;
+    animation: noResultsIn 250ms ease-out;
+}
+
+.no-results h3 {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: #ffd166;
+}
+
+.no-results p {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.no-results span {
+    font-size: 14px;
+    color: #d6d6d6;
+}
+
+@keyframes noResultsIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 .type {
     display: flex;
     justify-content: center;
@@ -272,7 +314,7 @@ footer {
     color: white;
 }
 
-dialog[open]{
+dialog[open] {
     display: flex;
     flex-direction: column;
     width: 480px;
@@ -289,14 +331,14 @@ dialog::backdrop {
     background-color: rgba(0, 0, 0, 0.55);
 }
 
-dialog button{
+dialog button {
     align-self: flex-end;
     border: none;
     color: rgb(255, 255, 255);
-    background-color:rgb(0,0,0);
+    background-color: rgb(0, 0, 0);
 }
 
-dialog button:hover{
+dialog button:hover {
     background-color: rgb(102, 102, 102);
 }
 

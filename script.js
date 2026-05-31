@@ -1,32 +1,33 @@
 const pokedexAPI = 'https://pokeapi.co/api/v2/pokemon?limit=50&offset=0';
 const loadingTime = 1500;
+const pokedexStorageKey = 'pokedexData';
 let allCharacters = [];
 let currentPage = 1;
 let hasNextPage = true;
 let isLoading = false;
 
 function init() {
-    loadCharacters();
+    const cachedData = loadFromLocalStorage();
+    if (cachedData) {
+        allCharacters = cachedData.allCharacters;
+        currentPage = cachedData.currentPage;
+        hasNextPage = cachedData.hasNextPage;
+        displayCharacters(allCharacters);
+    } else {
+        loadCharacters();
+    }
+
     setupEventListeners();
 }
 
 async function loadCharacters(page = 1) {
-    if (isLoading) {
-        return;
-    }
-
     const loadingStartedAt = Date.now();
     setLoadingState(true);
-    const offset = (page - 1) * 50;
     try {
+        const offset = (page - 1) * 50;
         const response = await fetch(pokedexAPI.replace('offset=0', `offset=${offset}`));
         const data = await response.json();
-
-        for (let i = 0; i < data.results.length; i++) {
-            const detailResponse = await fetch(data.results[i].url);
-            const detailData = await detailResponse.json();
-            data.results[i] = detailData;
-        }
+        await loadCharacterDetails(data.results);
 
         if (page === 1) {
             allCharacters = data.results;
@@ -36,8 +37,7 @@ async function loadCharacters(page = 1) {
 
         hasNextPage = data.next !== null;
         displayCharacters(allCharacters);
-    } catch (error) {
-        console.error('Fehler beim Laden der Pokemon:', error);
+        saveToLocalStorage();
     } finally {
         const elapsedTime = Date.now() - loadingStartedAt;
         if (elapsedTime < loadingTime) {
@@ -47,22 +47,72 @@ async function loadCharacters(page = 1) {
     }
 }
 
+async function loadCharacterDetails(results) {
+    for (let i = 0; i < results.length; i++) {
+        const detailResponse = await fetch(results[i].url);
+        const detailData = await detailResponse.json();
+        results[i] = detailData;
+    }
+}
+
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function toStorageCharacter(character) {
+    let types = [];
+    for (let i = 0; i < character.types.length; i++) {
+        types.push({ type: { name: character.types[i].type.name } });
+    }
+
+    let stats = [];
+    for (let i = 0; i < character.stats.length; i++) {
+        stats.push({
+            base_stat: character.stats[i].base_stat,
+            stat: { name: character.stats[i].stat.name }
+        });
+    }
+
+    return {
+        id: character.id,
+        name: character.name,
+        types,
+        stats,
+        sprites: {
+            other: {
+                home: {
+                    front_default: character.sprites.other.home.front_default
+                }
+            }
+        }
+    };
+}
+
+function saveToLocalStorage() {
+    let compactCharacters = [];
+    for (let i = 0; i < allCharacters.length; i++) {
+        compactCharacters.push(toStorageCharacter(allCharacters[i]));
+    }
+
+    const saveData = {
+        allCharacters: compactCharacters,
+        currentPage,
+        hasNextPage
+    };
+    localStorage.setItem(pokedexStorageKey, JSON.stringify(saveData));
+}
+
+function loadFromLocalStorage() {
+    const loadData = localStorage.getItem(pokedexStorageKey);
+    return loadData ? JSON.parse(loadData) : null;
 }
 
 function setLoadingState(loading) {
     isLoading = loading;
     const loader = document.getElementById('loadSpinner');
     const loadMoreButton = document.querySelector('.loadMore button');
-
-    if (loader) {
-        loader.hidden = !loading;
-    }
-
-    if (loadMoreButton) {
-        loadMoreButton.disabled = loading || !hasNextPage;
-    }
+    loader.hidden = !loading;
+    loadMoreButton.disabled = loading || !hasNextPage;
 }
 
 function setupEventListeners() {
@@ -70,41 +120,38 @@ function setupEventListeners() {
     const loadMoreButton = document.querySelector('.loadMore button');
     const dialog = document.getElementById('pokeDetailsDialog');
 
-    if (searchInput) {
-        searchInput.addEventListener('input', (event) => {
-            const searchTerm = event.target.value.toLowerCase().trim();
-            if (searchTerm.length < 3) {
-                displayCharacters(allCharacters);
-                return;
-            }
+    searchInput.addEventListener('input', (event) => {
+        const searchTerm = event.target.value.toLowerCase().trim();
+        if (searchTerm.length < 3) {
+            displayCharacters(allCharacters, false);
+            return;
+        }
 
-            let filtered = [];
-            for (let i = 0; i < allCharacters.length; i++) {
-                if (allCharacters[i].name.toLowerCase().includes(searchTerm)) {
-                    filtered.push(allCharacters[i]);
-                }
-            }
+        displayCharacters(filterCharacters(searchTerm), true);
+    });
 
-            displayCharacters(filtered);
-        });
+    loadMoreButton.addEventListener('click', () => {
+        if (hasNextPage && !isLoading) {
+            currentPage++;
+            loadCharacters(currentPage);
+        }
+    });
+
+    dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) {
+            dialog.close();
+        }
+    });
+}
+
+function filterCharacters(searchTerm) {
+    let filtered = [];
+    for (let i = 0; i < allCharacters.length; i++) {
+        if (allCharacters[i].name.toLowerCase().includes(searchTerm)) {
+            filtered.push(allCharacters[i]);
+        }
     }
-
-    if (loadMoreButton) {
-        loadMoreButton.addEventListener('click', () => {
-            if (hasNextPage && !isLoading) {
-                currentPage++;
-                loadCharacters(currentPage);
-            }
-        });
-    }
-
-    if (dialog) {
-        dialog.addEventListener('click', (event) => {
-            if (event.target === dialog) {
-                dialog.close();
-            }
-        });
-    }
+    return filtered;
 }
 
 function getTypeIconUrl(typeName) {
@@ -165,44 +212,47 @@ function findCharacterById(characterId) {
 
 function openDialogById(characterId) {
     const selectedCharacter = findCharacterById(characterId);
-    if (!selectedCharacter) {
-        return;
-    }
-
     const dialog = document.getElementById('pokeDetailsDialog');
     const dialogContent = document.getElementById('dialogContent');
-    if (dialogContent) {
-        dialogContent.innerHTML = createDialogTemplate(selectedCharacter);
-    }
-
-    if (dialog) {
-        dialog.showModal();
-    }
+    dialogContent.innerHTML = createDialogTemplate(selectedCharacter);
+    dialog.showModal();
 }
 
 function closeDialog() {
     const dialog = document.getElementById('pokeDetailsDialog');
-    if (dialog) {
-        dialog.close();
-    }
+    dialog.close();
 }
 
-function displayCharacters(characters) {
+function displayCharacters(characters, isSearchResult = false) {
     const cards = document.getElementById('cards');
-    if (!cards) {
-        return;
-    }
+    const loadMoreButton = document.querySelector('.loadMore button');
 
     if (characters.length === 0) {
-        cards.innerHTML = '<p class="no-results">Kein Pokemon gefunden.</p>';
+        loadMoreButton.disabled = true;
+        cards.innerHTML = createNoResultsHtml();
         return;
     }
 
+    cards.innerHTML = createCardsHtml(characters);
+    loadMoreButton.disabled = isSearchResult || isLoading || !hasNextPage;
+}
+
+function createNoResultsHtml() {
+    return `
+        <div class="no-results">
+            <h3>No match in the Pokedex</h3>
+            <p>This Pokemon is hiding really well right now.</p>
+            <span>Try a different name or just the first few letters.</span>
+        </div>
+    `;
+}
+
+function createCardsHtml(characters) {
     let html = '';
     for (let i = 0; i < characters.length; i++) {
         html += createCard(characters[i]);
     }
-    cards.innerHTML = html;
+    return html;
 }
 
 function createCard(character) {
