@@ -1,4 +1,4 @@
-const pokedexAPI = 'https://pokeapi.co/api/v2/pokemon?limit=50&offset=0';
+const pokedexAPI = 'https://pokeapi.co/api/v2/pokemon?limit=30&offset=0';
 const loadingTime = 1500;
 const pokedexStorageKey = 'pokedexData';
 let allCharacters = [];
@@ -7,11 +7,11 @@ let hasNextPage = true;
 let isLoading = false;
 
 function init() {
-    const cachedData = loadFromLocalStorage();
-    if (cachedData) {
-        allCharacters = cachedData.allCharacters;
-        currentPage = cachedData.currentPage;
-        hasNextPage = cachedData.hasNextPage;
+    const savedData = loadFromLocalStorage();
+    if (savedData) {
+        allCharacters = savedData.allCharacters;
+        currentPage = savedData.currentPage;
+        hasNextPage = savedData.hasNextPage;
         displayCharacters(allCharacters);
     } else {
         loadCharacters();
@@ -24,7 +24,7 @@ async function loadCharacters(page = 1) {
     const loadingStartedAt = Date.now();
     setLoadingState(true);
     try {
-        const offset = (page - 1) * 50;
+        const offset = (page - 1) * 30;
         const response = await fetch(pokedexAPI.replace('offset=0', `offset=${offset}`));
         const data = await response.json();
         await loadCharacterDetails(data.results);
@@ -184,7 +184,7 @@ function createDialogStatsHtml(character) {
                 <span>${statName}</span>
                 <span>${statValue}</span>
             </div>
-        `;
+        `;        
     }
     return html;
 }
@@ -192,12 +192,15 @@ function createDialogStatsHtml(character) {
 function createDialogTemplate(character) {
     const firstType = character.types[0]?.type.name || 'normal';
     return `
-        <div class="dialog-card ${firstType}">
+         <div class="dialog-card ${firstType}">
             <h2>${character.name}</h2>
             <img src="${character.sprites.other.home.front_default}" alt="${character.name}">
             <div class="dialog-types">${createDialogTypeHtml(character)}</div>
             <div class="dialog-stats">${createDialogStatsHtml(character)}</div>
-        </div>
+            <div class="navigationArrows">
+                <button style="rotate: 180deg;"><img src="./images/arrow.png" alt=""></button>
+                <button><img src="./images/arrow.png" alt=""></button>
+            </div>
     `;
 }
 
@@ -229,7 +232,7 @@ function displayCharacters(characters, isSearchResult = false) {
 
     if (characters.length === 0) {
         loadMoreButton.disabled = true;
-        cards.innerHTML = createNoResultsHtml();
+        cards.innerHTML = noResultsHtml();
         return;
     }
 
@@ -237,7 +240,7 @@ function displayCharacters(characters, isSearchResult = false) {
     loadMoreButton.disabled = isSearchResult || isLoading || !hasNextPage;
 }
 
-function createNoResultsHtml() {
+function noResultsHtml() {
     return `
         <div class="no-results">
             <h3>No match in the Pokedex</h3>
