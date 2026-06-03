@@ -184,7 +184,7 @@ function createDialogStatsHtml(character) {
                 <span>${statName}</span>
                 <span>${statValue}</span>
             </div>
-        `;        
+        `;
     }
     return html;
 }
@@ -198,8 +198,8 @@ function createDialogTemplate(character) {
             <div class="dialog-types">${createDialogTypeHtml(character)}</div>
             <div class="dialog-stats">${createDialogStatsHtml(character)}</div>
             <div class="navigationArrows">
-                <button style="rotate: 180deg;"><img src="./images/arrow.png" alt=""></button>
-                <button><img src="./images/arrow.png" alt=""></button>
+                <button onclick="openDialogByPrevId(${character.id})" style="rotate: 180deg;"><img src="./images/arrow.png" alt=""></button>
+                <button onclick="openDialogByNextId(${character.id})"><img src="./images/arrow.png" alt=""></button>
             </div>
     `;
 }
@@ -213,12 +213,51 @@ function findCharacterById(characterId) {
     return null;
 }
 
+function findCharacterByPrevId(characterId) {
+    for (let i = 0; i < allCharacters.length; i++) {
+        if (allCharacters[i].id === characterId - 1) {
+            return allCharacters[i];
+        }
+    }
+
+    return null;
+}
+
+function findCharacterByNextId(characterId) {
+    for (let i = 0; i < allCharacters.length; i++) {
+        if (allCharacters[i].id === characterId + 1) {
+            return allCharacters[i];
+        }
+    }
+    return null;
+}
+
 function openDialogById(characterId) {
     const selectedCharacter = findCharacterById(characterId);
     const dialog = document.getElementById('pokeDetailsDialog');
     const dialogContent = document.getElementById('dialogContent');
     dialogContent.innerHTML = createDialogTemplate(selectedCharacter);
     dialog.showModal();
+}
+
+function openDialogByPrevId(characterId) {
+    const selectedCharacter = findCharacterByPrevId(characterId);
+    const dialog = document.getElementById('pokeDetailsDialog');
+    const dialogContent = document.getElementById('dialogContent');
+    if (characterId <= 1) {
+        return
+    }
+    dialogContent.innerHTML = createDialogTemplate(selectedCharacter);
+}
+
+function openDialogByNextId(characterId) {
+    const selectedCharacter = findCharacterByNextId(characterId);
+    const dialog = document.getElementById('pokeDetailsDialog');
+    const dialogContent = document.getElementById('dialogContent');
+    if (characterId >= allCharacters.length) {
+        return
+    }
+    dialogContent.innerHTML = createDialogTemplate(selectedCharacter);
 }
 
 function closeDialog() {
