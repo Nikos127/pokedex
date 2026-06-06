@@ -25,14 +25,14 @@ function createDialogStatsHtml(character) {
 function createDialogTemplate(character) {
     const firstType = character.types[0]?.type.name || 'normal';
     return `
-         <div class="dialog-card ${firstType}">
+         <div data-id="overlay-pokemon-name" class="dialog-card ${firstType}">
             <h2>${character.name}</h2>
-            <img src="${character.sprites.other.home.front_default}" alt="${character.name}">
+            <img data-id="dialog-image" src="${character.sprites.other.home.front_default}" alt="${character.name}">
             <div class="dialog-types">${createDialogTypeHtml(character)}</div>
             <div class="dialog-stats">${createDialogStatsHtml(character)}</div>
             <div class="navigationArrows">
-                <button onclick="openDialogByPrevId(${character.id})" style="rotate: 180deg;"><img src="./images/arrow.png" alt=""></button>
-                <button onclick="openDialogByNextId(${character.id})"><img src="./images/arrow.png" alt=""></button>
+                <button data-id="prev-button" onclick="openDialogByPrevId(${character.id})" style="rotate: 180deg;"><img src="./images/arrow.png" alt=""></button>
+                <button data-id="next-button" onclick="openDialogByNextId(${character.id})"><img src="./images/arrow.png" alt=""></button>
             </div>
     `;
 }
@@ -41,7 +41,7 @@ function noResultsHtml() {
     return `
         <div class="no-results">
             <h3>No match in the Pokedex</h3>
-            <p>This Pokemon is hiding really well right now.</p>
+            <p data-id="not-found">This Pokemon is hiding really well right now.</p>
             <span>Try a different name or just the first few letters.</span>
         </div>
     `;
@@ -57,9 +57,9 @@ function createCard(character) {
     }
 
     return `
-        <div class="card">
+        <div data-id="card" class="card">
             <div class="${firstType} border">${character.name}</div>
-            <button onclick="openDialogById(${character.id})" class="${firstType}"><img src="${character.sprites.other.home.front_default}" alt="${character.name}"></button>
+            <button onclick="openDialogById(${character.id})" class="${firstType}"><img data-id="card-image" src="${character.sprites.other.home.front_default}" alt="${character.name}"></button>
             <div class="type">${typeHtml}</div>
         </div>
     `;

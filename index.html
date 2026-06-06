@@ -26,10 +26,10 @@
         </div>
         <div class="searchBox">
             <label for="search">Search:</label>
-            <input id="search" type="text" name="search" autocomplete="off" placeholder="Character name...">
+            <input data-id="search-input" id="search" type="text" name="search" autocomplete="off" placeholder="Character name...">
         </div>
     </header>
-    <main>
+    <main data-id="content">
         <div id="loadSpinner" class="loadSpinner" hidden>
             <img src="./images/spin.gif" alt="Loading Pokemon data">
         </div>
@@ -37,10 +37,10 @@
 
         </div>
         <div class="loadMore">
-            <button>Load more...</button>
+            <button data-id="load-more-button">Load more...</button>
         </div>
-        <dialog id="pokeDetailsDialog">
-            <button onclick="closeDialog()">X</button>
+        <dialog data-id="dialog" id="pokeDetailsDialog">
+            <button data-id="close-dialog-button" onclick="closeDialog()">X</button>
             <div class="dialogContent" id="dialogContent">
 
             </div>
