@@ -202,22 +202,26 @@ function openDialogById(characterId) {
 }
 
 function openDialogByPrevId(characterId) {
-    const selectedCharacter = findCharacterByPrevId(characterId);
+    let targetId = characterId - 1;
+    if (targetId < 1) {
+        targetId = allCharacters.length;
+    }
+
+    const selectedCharacter = findCharacterById(targetId);
     const dialog = document.getElementById('pokeDetailsDialog');
     const dialogContent = document.getElementById('dialogContent');
-    if (characterId <= 1) {
-        return
-    }
     dialogContent.innerHTML = createDialogTemplate(selectedCharacter);
 }
 
 function openDialogByNextId(characterId) {
-    const selectedCharacter = findCharacterByNextId(characterId);
+    let targetId = characterId + 1;
+    if (targetId > allCharacters.length) {
+        targetId = 1;
+    }
+
+    const selectedCharacter = findCharacterById(targetId);
     const dialog = document.getElementById('pokeDetailsDialog');
     const dialogContent = document.getElementById('dialogContent');
-    if (characterId >= allCharacters.length) {
-        return
-    }
     dialogContent.innerHTML = createDialogTemplate(selectedCharacter);
 }
 

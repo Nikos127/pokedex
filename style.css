@@ -101,8 +101,17 @@ main {
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
     background-color: rgb(27, 26, 26);
     max-width: 1920px;
+}
+
+.no-results-item {
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 .no-results {

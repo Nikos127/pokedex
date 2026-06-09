@@ -39,11 +39,13 @@ function createDialogTemplate(character) {
 
 function noResultsHtml() {
     return `
-        <div class="no-results">
-            <h3>No match in the Pokedex</h3>
-            <p data-id="not-found">This Pokemon is hiding really well right now.</p>
-            <span>Try a different name or just the first few letters.</span>
-        </div>
+        <li class="no-results-item">
+            <div class="no-results">
+                <h3>No match in the Pokedex</h3>
+                <p data-id="not-found">This Pokemon is hiding really well right now.</p>
+                <span>Try a different name or just the first few letters.</span>
+            </div>
+        </li>
     `;
 }
 
@@ -57,10 +59,10 @@ function createCard(character) {
     }
 
     return `
-        <div data-id="card" class="card">
+        <li data-id="card" class="card">
             <div class="${firstType} border">${character.name}</div>
             <button onclick="openDialogById(${character.id})" class="${firstType}"><img data-id="card-image" src="${character.sprites.other.home.front_default}" alt="${character.name}"></button>
             <div class="type">${typeHtml}</div>
-        </div>
+        </li>
     `;
 }
