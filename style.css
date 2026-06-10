@@ -124,7 +124,6 @@ main {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
     color: #ffffff;
     text-align: center;
-    animation: noResultsIn 250ms ease-out;
 }
 
 .no-results h3 {
@@ -142,18 +141,6 @@ main {
 .no-results span {
     font-size: 14px;
     color: #d6d6d6;
-}
-
-@keyframes noResultsIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px) scale(0.98);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
 }
 
 .type {
@@ -320,7 +307,7 @@ footer {
     font-size: 18px;
     font-weight: bold;
     justify-content: center;
-    color: white;
+    color: rgb(0, 0, 0);
 }
 
 dialog[open] {
