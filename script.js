@@ -24,27 +24,38 @@ async function loadCharacters(page = 1) {
     const loadingStartedAt = Date.now();
     setLoadingState(true);
     try {
-        const offset = (page - 1) * 30;
-        const response = await fetch(pokedexAPI.replace('offset=0', `offset=${offset}`));
-        const data = await response.json();
-        await loadCharacterDetails(data.results);
-
-        if (page === 1) {
-            allCharacters = data.results;
-        } else {
-            allCharacters = allCharacters.concat(data.results);
-        }
-
+        const data = await getCharactersData(page);
+        mergeCharacters(page, data.results);
         hasNextPage = data.next !== null;
         displayCharacters(allCharacters);
         saveToLocalStorage();
     } finally {
-        const elapsedTime = Date.now() - loadingStartedAt;
-        if (elapsedTime < loadingTime) {
-            await delay(loadingTime - elapsedTime);
-        }
-        setLoadingState(false);
+        await finishLoadingState(loadingStartedAt);
     }
+}
+
+async function getCharactersData(page) {
+    const offset = (page - 1) * 30;
+    const response = await fetch(pokedexAPI.replace('offset=0', `offset=${offset}`));
+    const data = await response.json();
+    await loadCharacterDetails(data.results);
+    return data;
+}
+
+function mergeCharacters(page, results) {
+    if (page === 1) {
+        allCharacters = results;
+        return;
+    }
+    allCharacters = allCharacters.concat(results);
+}
+
+async function finishLoadingState(loadingStartedAt) {
+    const elapsedTime = Date.now() - loadingStartedAt;
+    if (elapsedTime < loadingTime) {
+        await delay(loadingTime - elapsedTime);
+    }
+    setLoadingState(false);
 }
 
 async function loadCharacterDetails(results) {
@@ -59,7 +70,7 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function toStorageCharacter(character) {
+function getStorageTypesAndStats(character) {
     let types = [];
     for (let i = 0; i < character.types.length; i++) {
         types.push({ type: { name: character.types[i].type.name } });
@@ -72,6 +83,14 @@ function toStorageCharacter(character) {
             stat: { name: character.stats[i].stat.name }
         });
     }
+
+    return { types, stats };
+}
+
+function toStorageCharacter(character) {
+    let storageData = getStorageTypesAndStats(character);
+    let types = storageData.types;
+    let stats = storageData.stats;
 
     return {
         id: character.id,
@@ -120,28 +139,32 @@ function setupEventListeners() {
     const loadMoreButton = document.querySelector('.loadMore button');
     const dialog = document.getElementById('pokeDetailsDialog');
 
-    searchInput.addEventListener('input', (event) => {
-        const searchTerm = event.target.value.toLowerCase().trim();
-        if (searchTerm.length < 3) {
-            displayCharacters(allCharacters, false);
-            return;
-        }
+    searchInput.addEventListener('input', handleSearchInput);
+    loadMoreButton.addEventListener('click', handleLoadMoreClick);
+    dialog.addEventListener('click', handleDialogClick);
+}
 
-        displayCharacters(filterCharacters(searchTerm), true);
-    });
+function handleSearchInput(event) {
+    const searchTerm = event.target.value.toLowerCase().trim();
+    if (searchTerm.length < 3) {
+        displayCharacters(allCharacters, false);
+        return;
+    }
+    displayCharacters(filterCharacters(searchTerm), true);
+}
 
-    loadMoreButton.addEventListener('click', () => {
-        if (hasNextPage && !isLoading) {
-            currentPage++;
-            loadCharacters(currentPage);
-        }
-    });
+function handleLoadMoreClick() {
+    if (hasNextPage && !isLoading) {
+        currentPage++;
+        loadCharacters(currentPage);
+    }
+}
 
-    dialog.addEventListener('click', (event) => {
-        if (event.target === dialog) {
-            dialog.close();
-        }
-    });
+function handleDialogClick(event) {
+    const dialog = document.getElementById('pokeDetailsDialog');
+    if (event.target === dialog) {
+        dialog.close();
+    }
 }
 
 function filterCharacters(searchTerm) {
@@ -174,55 +197,40 @@ function findCharacterById(characterId) {
     return null;
 }
 
-function findCharacterByPrevId(characterId) {
-    for (let i = 0; i < allCharacters.length; i++) {
-        if (allCharacters[i].id === characterId - 1) {
-            return allCharacters[i];
-        }
-    }
-
-    return null;
-}
-
-function findCharacterByNextId(characterId) {
-    for (let i = 0; i < allCharacters.length; i++) {
-        if (allCharacters[i].id === characterId + 1) {
-            return allCharacters[i];
-        }
-    }
-    return null;
-}
-
 function openDialogById(characterId) {
     const selectedCharacter = findCharacterById(characterId);
+    updateDialogContent(selectedCharacter);
     const dialog = document.getElementById('pokeDetailsDialog');
-    const dialogContent = document.getElementById('dialogContent');
-    dialogContent.innerHTML = createDialogTemplate(selectedCharacter);
     dialog.showModal();
 }
 
-function openDialogByPrevId(characterId) {
-    let nextId = characterId - 1;
-    if (nextId < 1) {
-        nextId = allCharacters.length;
+function getWrappedCharacterId(characterId, step) {
+    let targetId = characterId + step;
+    if (targetId < 1) {
+        targetId = allCharacters.length;
     }
+    if (targetId > allCharacters.length) {
+        targetId = 1;
+    }
+    return targetId;
+}
 
-    const selectedCharacter = findCharacterById(nextId);
+function updateDialogContent(selectedCharacter) {
     const dialog = document.getElementById('pokeDetailsDialog');
     const dialogContent = document.getElementById('dialogContent');
     dialogContent.innerHTML = createDialogTemplate(selectedCharacter);
 }
 
-function openDialogByNextId(characterId) {
-    let nextId = characterId + 1;
-    if (nextId > allCharacters.length) {
-        nextId = 1;
-    }
+function openDialogByPrevId(characterId) {
+    let targetId = getWrappedCharacterId(characterId, -1);
+    const selectedCharacter = findCharacterById(targetId);
+    updateDialogContent(selectedCharacter);
+}
 
-    const selectedCharacter = findCharacterById(nextId);
-    const dialog = document.getElementById('pokeDetailsDialog');
-    const dialogContent = document.getElementById('dialogContent');
-    dialogContent.innerHTML = createDialogTemplate(selectedCharacter);
+function openDialogByNextId(characterId) {
+    let targetId = getWrappedCharacterId(characterId, 1);
+    const selectedCharacter = findCharacterById(targetId);
+    updateDialogContent(selectedCharacter);
 }
 
 function closeDialog() {
