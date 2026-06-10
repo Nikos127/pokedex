@@ -202,24 +202,24 @@ function openDialogById(characterId) {
 }
 
 function openDialogByPrevId(characterId) {
-    let targetId = characterId - 1;
-    if (targetId < 1) {
-        targetId = allCharacters.length;
+    let nextId = characterId - 1;
+    if (nextId < 1) {
+        nextId = allCharacters.length;
     }
 
-    const selectedCharacter = findCharacterById(targetId);
+    const selectedCharacter = findCharacterById(nextId);
     const dialog = document.getElementById('pokeDetailsDialog');
     const dialogContent = document.getElementById('dialogContent');
     dialogContent.innerHTML = createDialogTemplate(selectedCharacter);
 }
 
 function openDialogByNextId(characterId) {
-    let targetId = characterId + 1;
-    if (targetId > allCharacters.length) {
-        targetId = 1;
+    let nextId = characterId + 1;
+    if (nextId > allCharacters.length) {
+        nextId = 1;
     }
 
-    const selectedCharacter = findCharacterById(targetId);
+    const selectedCharacter = findCharacterById(nextId);
     const dialog = document.getElementById('pokeDetailsDialog');
     const dialogContent = document.getElementById('dialogContent');
     dialogContent.innerHTML = createDialogTemplate(selectedCharacter);
