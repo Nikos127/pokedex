@@ -307,7 +307,16 @@ footer {
     font-size: 18px;
     font-weight: bold;
     justify-content: center;
-    color: rgb(0, 0, 0);
+    color: #000000;
+}
+
+.water.border,
+.poison.border,
+.fighting.border,
+.ghost.border,
+.dragon.border,
+.dark.border {
+    color: #ffffff;
 }
 
 dialog[open] {
